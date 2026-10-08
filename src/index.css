@@ -1,0 +1,144 @@
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Hide horizontal scrollbar across all browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* =========================================================
+   BRIGHT VIEW (LIGHT THEME) FOR DAYTIME COUNTER / RETAIL POS
+   ========================================================= */
+.bright-theme {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.bright-theme [class*="bg-[#080E1A]"] {
+  background-color: #f8fafc !important;
+}
+
+.bright-theme [class*="bg-[#0B1120]"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.bright-theme [class*="bg-[#0F172A]"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.bright-theme .bg-slate-950,
+.bright-theme.bg-slate-950 {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.bright-theme .bg-slate-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.bright-theme .bg-slate-900\/90,
+.bright-theme .bg-slate-900\/95 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  color: #0f172a !important;
+}
+
+.bright-theme .bg-slate-950\/70,
+.bright-theme .bg-slate-950\/80,
+.bright-theme .bg-slate-950\/90 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.bright-theme .border-slate-800,
+.bright-theme .border-slate-800\/50,
+.bright-theme .border-slate-800\/60,
+.bright-theme .border-slate-800\/70,
+.bright-theme .border-slate-800\/80,
+.bright-theme .border-slate-800\/90,
+.bright-theme .border-slate-700,
+.bright-theme .border-slate-700\/60,
+.bright-theme .border-slate-700\/80 {
+  border-color: #e2e8f0 !important;
+}
+
+.bright-theme .text-slate-100,
+.bright-theme .text-white {
+  color: #0f172a !important;
+}
+
+.bright-theme .text-slate-200,
+.bright-theme .text-slate-300 {
+  color: #1e293b !important;
+}
+
+.bright-theme .text-slate-400 {
+  color: #64748b !important;
+}
+
+.bright-theme .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.bright-theme .bg-slate-800,
+.bright-theme .bg-slate-800\/80,
+.bright-theme .bg-slate-800\/70,
+.bright-theme .bg-slate-800\/60,
+.bright-theme .bg-slate-800\/50 {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+.bright-theme input,
+.bright-theme select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+.bright-theme input::placeholder {
+  color: #94a3b8 !important;
+}
+
+.bright-theme .hover\:bg-slate-800\/30:hover {
+  background-color: #f8fafc !important;
+}
+
+.bright-theme .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #f1f5f9 !important;
+}
+
+/* Custom Sleek Scrollbar for POS Panels */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

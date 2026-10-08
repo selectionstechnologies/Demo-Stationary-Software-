@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Royal Stationers — Counter Manager SaaS (B2C POS)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              display: ['Outfit', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            colors: {
+              royal: {
+                50: '#F0F5FF',
+                100: '#E0EBFF',
+                200: '#B8D2FE',
+                500: '#2563EB',
+                600: '#1D4ED8',
+                700: '#1E40AF',
+                800: '#1E293B',
+                900: '#0F172A',
+                950: '#080E1A',
+              },
+              gold: {
+                400: '#FBBF24',
+                500: '#F59E0B',
+                600: '#D97706',
+                700: '#B45309',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @media print {
+        body * {
+          visibility: hidden !important;
+        }
+        #thermal-receipt, #thermal-receipt * {
+          visibility: visible !important;
+        }
+        #thermal-receipt {
+          position: fixed !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 80mm !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          background: white !important;
+          color: black !important;
+          box-shadow: none !important;
+        }
+      }
+      /* Custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(241, 245, 249, 0.6);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-slate-100 font-sans antialiased selection:bg-gold-500 selection:text-slate-950">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
