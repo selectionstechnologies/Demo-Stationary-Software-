@@ -10,15 +10,17 @@ export const PosTopNav = ({
   onOpenSettings,
   onOpenAddInventory,
   user,
+  cartCount = 0,
+  onOpenMobileCart = null,
 }) => {
   const searchInputRef = useRef(null);
 
   return (
-    <header className="h-14 bg-[#0B1120] border-b border-slate-800/80 px-3 sm:px-4 flex items-center justify-between gap-3 shrink-0 select-none z-30">
+    <header className="h-14 bg-[#0B1120] border-b border-slate-800/80 px-2.5 sm:px-4 flex items-center justify-between gap-2 sm:gap-3 shrink-0 select-none z-30">
       {/* Left: Brand Identity */}
-      <div className="flex items-center gap-2.5 shrink-0">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 shrink-0">
-          <Icon name="crown" className="w-4 h-4" />
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 shrink-0">
+          <Icon name="crown" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
         <div className="min-w-0">
           <h1 className="font-extrabold tracking-tight font-display text-xs sm:text-sm text-white leading-tight truncate">
@@ -32,7 +34,7 @@ export const PosTopNav = ({
 
       {/* Center: Search Bar */}
       <div className="flex-1 max-w-lg min-w-0 relative flex items-center">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+        <div className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
           <Icon name="search" className="w-3.5 h-3.5" />
         </div>
         <input
@@ -40,26 +42,42 @@ export const PosTopNav = ({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search Stationery — pen, notebook, paper, file..."
-          className="w-full bg-[#0F172A] border border-slate-700/80 focus:border-amber-500/80 rounded-xl pl-9 pr-8 py-1.5 text-xs text-slate-100 placeholder-slate-400 outline-none transition shadow-inner"
+          placeholder="Search Stationery — pen, notebook..."
+          className="w-full bg-[#0F172A] border border-slate-700/80 focus:border-amber-500/80 rounded-xl pl-8 sm:pl-9 pr-7 sm:pr-8 py-1.5 text-xs text-slate-100 placeholder-slate-400 outline-none transition shadow-inner"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white cursor-pointer"
           >
             <Icon name="x" className="w-3.5 h-3.5" />
           </button>
         )}
       </div>
 
-      {/* Right Controls: Add Stock, Photostat, Bright View, Online Badge, Settings */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Add Inventory Button */}
+      {/* Right Controls */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Mobile Cart Trigger Pill (lg:hidden) */}
+        {onOpenMobileCart && (
+          <button
+            onClick={onOpenMobileCart}
+            className="lg:hidden relative p-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-400 rounded-xl transition cursor-pointer flex items-center justify-center shadow-sm"
+            title="Open Active Bill"
+          >
+            <Icon name="cart" className="w-4 h-4" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md">
+                {cartCount > 9 ? '9+' : cartCount}
+              </span>
+            )}
+          </button>
+        )}
+
+        {/* Add Inventory Button (Desktop / Tablet) */}
         {onOpenAddInventory && (
           <button
             onClick={onOpenAddInventory}
-            className="px-2.5 sm:px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+            className="hidden sm:flex px-2.5 sm:px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded-xl text-xs font-bold transition items-center gap-1.5 cursor-pointer shadow-sm"
             title="Add New Inventory / Stock"
           >
             <Icon name="plus" className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -70,7 +88,7 @@ export const PosTopNav = ({
         {/* Photostat Service Button */}
         <button
           onClick={onOpenQuickService}
-          className="px-2.5 sm:px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-blue-400 hover:text-blue-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+          className="hidden sm:flex px-2.5 sm:px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-blue-400 hover:text-blue-300 rounded-xl text-xs font-bold transition items-center gap-1.5 cursor-pointer shadow-sm"
           title="Custom Photostat / Print Job"
         >
           <Icon name="printer" className="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -80,7 +98,7 @@ export const PosTopNav = ({
         {/* Bright View Toggle */}
         <button
           onClick={onToggleBrightView}
-          className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
+          className={`p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border ${
             isBrightView
               ? 'bg-amber-400 border-amber-500 text-slate-950 shadow-md'
               : 'bg-slate-900/90 hover:bg-slate-800 border-slate-700/80 text-amber-400 hover:text-amber-300'
@@ -92,7 +110,7 @@ export const PosTopNav = ({
         </button>
 
         {/* POS Online Status Pill */}
-        <div className="px-2.5 py-1.5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl flex items-center gap-1.5">
+        <div className="hidden sm:flex px-2.5 py-1.5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           <span className="text-xs font-semibold text-emerald-400 hidden lg:inline">POS Online</span>
         </div>

@@ -41,6 +41,7 @@ export default function App() {
 
   // Active Main Navigation: 'dashboard' | 'pos' | 'products' | 'inventory' | 'services' | 'khata' | 'sales' | 'settings'
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [mobilePosView, setMobilePosView] = useState('catalog'); // 'catalog' | 'cart'
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -196,6 +197,7 @@ export default function App() {
       setCart([]);
       setDiscount('0');
       setSelectedCustomer(customers[0]);
+      setMobilePosView('catalog');
       showToast('Active bill cleared', 'info');
     }
   };
@@ -218,6 +220,7 @@ export default function App() {
     setCart([]);
     setDiscount('0');
     setSelectedCustomer(customers[0]);
+    setMobilePosView('catalog');
     showToast(`Bill parked as ${newHeld.heldId}`, 'warning');
   };
 
@@ -298,6 +301,7 @@ export default function App() {
     setCart([]);
     setDiscount('0');
     setSelectedCustomer(customers[0]);
+    setMobilePosView('catalog');
     showToast(`Payment successful! Bill #${invoiceId} generated`, 'success');
   };
 
@@ -381,6 +385,14 @@ export default function App() {
   const totalBillsCount = completedBills.length + 26;
   const averageBillValue = Math.round(todaySalesTotal / totalBillsCount);
 
+  // Cart summary calculations for mobile navigation
+  const cartItemsCount = cart.reduce((s, i) => s + i.qty, 0);
+  const cartSubtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  let cartDiscountAmount = discountType === 'percent' ? (cartSubtotal * (Number(discount) || 0)) / 100 : Number(discount) || 0;
+  cartDiscountAmount = Math.min(cartDiscountAmount, cartSubtotal);
+  const cartTaxAmount = taxEnabled ? (cartSubtotal - cartDiscountAmount) * 0.05 : 0;
+  const cartGrandTotal = Math.round(cartSubtotal - cartDiscountAmount + cartTaxAmount);
+
   // If not logged in, show Login Screen (with Bright View toggle support)
   if (!currentUser) {
     return (
@@ -412,6 +424,11 @@ export default function App() {
         onOpenSettings={() => setActiveTab(activeTab === 'settings' ? 'pos' : 'settings')}
         onOpenAddInventory={() => setIsAddInventoryOpen(true)}
         user={currentUser}
+        cartCount={cartItemsCount}
+        onOpenMobileCart={() => {
+          setActiveTab('pos');
+          setMobilePosView('cart');
+        }}
       />
 
       {/* Main Multi-Module SaaS Workspace */}
@@ -419,10 +436,15 @@ export default function App() {
         {/* 1. Left Sidebar Navigation (Main Categories) */}
         <PosSidebar
           activeTab={activeTab}
-          onSelectTab={(tabId) => setActiveTab(tabId)}
+          onSelectTab={(tabId) => {
+            setActiveTab(tabId);
+            if (tabId === 'pos') setMobilePosView('catalog');
+          }}
           user={currentUser}
           onOpenSettings={() => setActiveTab('settings')}
           onOpenAddInventory={() => setIsAddInventoryOpen(true)}
+          cartCount={cartItemsCount}
+          onToggleMobilePosView={() => setMobilePosView((prev) => (prev === 'catalog' ? 'cart' : 'catalog'))}
         />
 
         {/* 2. Center Content Canvas */}
@@ -441,23 +463,127 @@ export default function App() {
           {/* B. POS Counter Manager (Retail Billing Cockpit) */}
           {activeTab === 'pos' && (
             <>
-              {/* Top 4 KPI Banner Cards */}
-              <KpiBanner
-                totalItemsCount={totalStockCount}
-                todaySales={todaySalesTotal}
-                totalBillsCount={totalBillsCount}
-                averageBillValue={averageBillValue}
-              />
+              {/* Mobile Segmented Toggle Bar (Stationery Catalog vs Active Bill) */}
+              <div className="lg:hidden flex items-center p-1.5 bg-[#0B1120] border-b border-slate-800 shrink-0 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setMobilePosView('catalog')}
+                  className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                    mobilePosView === 'catalog'
+                      ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
+                      : 'bg-[#0F172A] text-slate-400 hover:text-white border border-slate-800/80'
+                  }`}
+                >
+                  <Icon name="layers" className="w-3.5 h-3.5" />
+                  <span>Catalog</span>
+                </button>
 
-              {/* Product Grid Area with Category Filter Pills */}
-              <ProductCatalog
-                products={products}
-                categories={categories}
-                selectedCategory={selectedCategory}
-                onSelectCategory={(catId) => setSelectedCategory(catId)}
-                searchQuery={searchQuery}
-                onAddToCart={handleAddToCart}
-              />
+                <button
+                  type="button"
+                  onClick={() => setMobilePosView('cart')}
+                  className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer relative ${
+                    mobilePosView === 'cart'
+                      ? 'bg-amber-500 text-slate-950 font-extrabold shadow-sm'
+                      : 'bg-[#0F172A] text-slate-400 hover:text-white border border-slate-800/80'
+                  }`}
+                >
+                  <Icon name="cart" className="w-3.5 h-3.5" />
+                  <span>Active Bill</span>
+                  {cartItemsCount > 0 && (
+                    <span
+                      className={`text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                        mobilePosView === 'cart'
+                          ? 'bg-slate-950 text-amber-400'
+                          : 'bg-amber-500 text-slate-950'
+                      }`}
+                    >
+                      {cartItemsCount}
+                    </span>
+                  )}
+                  <span className="font-mono text-[10px] opacity-80">
+                    • Rs. {cartGrandTotal.toLocaleString()}
+                  </span>
+                </button>
+              </div>
+
+              {/* Mobile Cart View (Active when mobilePosView === 'cart' on < lg) */}
+              <div className={`lg:hidden flex-1 flex flex-col min-h-0 ${mobilePosView === 'cart' ? 'flex' : 'hidden'}`}>
+                <ActiveCart
+                  cart={cart}
+                  customers={customers}
+                  selectedCustomer={selectedCustomer}
+                  onSelectCustomer={handleSelectCustomer}
+                  onUpdateQty={handleUpdateQty}
+                  onRemoveItem={handleRemoveItem}
+                  onClearCart={handleClearCart}
+                  onHoldBill={handleHoldBill}
+                  onCheckout={triggerCheckout}
+                  discount={discount}
+                  setDiscount={setDiscount}
+                  discountType={discountType}
+                  setDiscountType={setDiscountType}
+                  taxEnabled={taxEnabled}
+                  setTaxEnabled={setTaxEnabled}
+                  isMobileView={true}
+                  onCloseMobile={() => setMobilePosView('catalog')}
+                />
+              </div>
+
+              {/* Catalog View (Shown on desktop lg:flex, and on mobile when mobilePosView === 'catalog') */}
+              <div className={`flex-1 flex flex-col min-h-0 ${mobilePosView === 'catalog' ? 'flex' : 'hidden lg:flex'}`}>
+                {/* Top 4 KPI Banner Cards */}
+                <KpiBanner
+                  totalItemsCount={totalStockCount}
+                  todaySales={todaySalesTotal}
+                  totalBillsCount={totalBillsCount}
+                  averageBillValue={averageBillValue}
+                />
+
+                {/* Product Grid Area with Category Filter Pills */}
+                <ProductCatalog
+                  products={products}
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onSelectCategory={(catId) => setSelectedCategory(catId)}
+                  searchQuery={searchQuery}
+                  onAddToCart={handleAddToCart}
+                />
+
+                {/* Mobile Sticky Bottom Checkout Bar (when browsing products) */}
+                <div className="lg:hidden p-2 bg-[#0B1120] border-t border-slate-800 flex items-center justify-between gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobilePosView('cart')}
+                    className="flex items-center gap-2 bg-[#0F172A] hover:bg-slate-800 border border-slate-700/80 px-2.5 py-1.5 rounded-xl text-left flex-1 transition cursor-pointer min-w-0"
+                  >
+                    <div className="relative shrink-0">
+                      <Icon name="cart" className="w-4 h-4 text-amber-400" />
+                      {cartItemsCount > 0 && (
+                        <span className="absolute -top-1.5 -right-2 bg-amber-500 text-slate-950 text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                          {cartItemsCount}
+                        </span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] text-slate-400 leading-none truncate">
+                        {cartItemsCount === 0 ? 'Bill is Empty' : `${cartItemsCount} Items in Bill`}
+                      </div>
+                      <div className="text-xs font-mono font-bold text-amber-400 leading-tight">
+                        PKR {cartGrandTotal.toLocaleString()}
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMobilePosView('cart')}
+                    className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-black text-xs rounded-xl shadow-md flex items-center gap-1 shrink-0 transition cursor-pointer"
+                  >
+                    <span>View Bill</span>
+                    <Icon name="chevron-right" className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </>
           )}
 
@@ -518,25 +644,27 @@ export default function App() {
           {activeTab === 'settings' && <StoreSettings />}
         </div>
 
-        {/* 3. Right Sidebar: Active Bill / Cart (Shown on POS screen) */}
+        {/* 3. Right Sidebar: Active Bill / Cart (Shown on Desktop >= lg) */}
         {activeTab === 'pos' && (
-          <ActiveCart
-            cart={cart}
-            customers={customers}
-            selectedCustomer={selectedCustomer}
-            onSelectCustomer={handleSelectCustomer}
-            onUpdateQty={handleUpdateQty}
-            onRemoveItem={handleRemoveItem}
-            onClearCart={handleClearCart}
-            onHoldBill={handleHoldBill}
-            onCheckout={triggerCheckout}
-            discount={discount}
-            setDiscount={setDiscount}
-            discountType={discountType}
-            setDiscountType={setDiscountType}
-            taxEnabled={taxEnabled}
-            setTaxEnabled={setTaxEnabled}
-          />
+          <div className="hidden lg:flex h-full shrink-0">
+            <ActiveCart
+              cart={cart}
+              customers={customers}
+              selectedCustomer={selectedCustomer}
+              onSelectCustomer={handleSelectCustomer}
+              onUpdateQty={handleUpdateQty}
+              onRemoveItem={handleRemoveItem}
+              onClearCart={handleClearCart}
+              onHoldBill={handleHoldBill}
+              onCheckout={triggerCheckout}
+              discount={discount}
+              setDiscount={setDiscount}
+              discountType={discountType}
+              setDiscountType={setDiscountType}
+              taxEnabled={taxEnabled}
+              setTaxEnabled={setTaxEnabled}
+            />
+          </div>
         )}
       </div>
 

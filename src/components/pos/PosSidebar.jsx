@@ -7,6 +7,8 @@ export const PosSidebar = ({
   user,
   onOpenSettings,
   onOpenAddInventory,
+  cartCount = 0,
+  onToggleMobilePosView = null,
 }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'chart' },
@@ -26,10 +28,18 @@ export const PosSidebar = ({
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
 
+          const handleClick = () => {
+            if (isActive && item.id === 'pos' && onToggleMobilePosView) {
+              onToggleMobilePosView();
+            } else {
+              onSelectTab(item.id);
+            }
+          };
+
           return (
             <button
               key={item.id}
-              onClick={() => onSelectTab(item.id)}
+              onClick={handleClick}
               className={`w-full px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between transition cursor-pointer text-left ${
                 isActive
                   ? 'bg-amber-500/15 border border-amber-500/50 text-amber-400 shadow-sm shadow-amber-500/10 font-bold'
@@ -38,8 +48,13 @@ export const PosSidebar = ({
               title={item.label}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className={`shrink-0 ${isActive ? 'text-amber-400' : 'text-slate-400'}`}>
+                <span className={`shrink-0 relative ${isActive ? 'text-amber-400' : 'text-slate-400'}`}>
                   <Icon name={item.icon} className="w-4 h-4" />
+                  {item.id === 'pos' && cartCount > 0 && (
+                    <span className="sm:hidden absolute -top-1.5 -right-2 bg-amber-500 text-slate-950 text-[8px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">
+                      {cartCount > 9 ? '9+' : cartCount}
+                    </span>
+                  )}
                 </span>
                 <span className="truncate hidden sm:inline">{item.label}</span>
               </div>

@@ -18,6 +18,8 @@ export const ActiveCart = ({
   setDiscountType,
   taxEnabled,
   setTaxEnabled,
+  isMobileView = false,
+  onCloseMobile = null,
 }) => {
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
@@ -38,7 +40,29 @@ export const ActiveCart = ({
   const totalItemsCount = cart.reduce((s, i) => s + i.qty, 0);
 
   return (
-    <aside className="w-72 xl:w-80 bg-[#0B1120] border-l border-slate-800/90 flex flex-col h-full shrink-0 select-none z-20">
+    <aside
+      className={`${
+        isMobileView ? 'w-full flex-1 border-none' : 'w-72 xl:w-80 border-l border-slate-800/90'
+      } bg-[#0B1120] flex flex-col h-full shrink-0 select-none z-20`}
+    >
+      {/* Mobile Top Return Bar */}
+      {isMobileView && onCloseMobile && (
+        <div className="p-2 sm:p-2.5 bg-[#0F172A] border-b border-slate-800/90 flex items-center justify-between shrink-0">
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            className="flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-[#080E1A] hover:bg-slate-800 px-2.5 py-1.5 rounded-xl border border-slate-700/80 transition cursor-pointer"
+          >
+            <Icon name="chevron-left" className="w-4 h-4" />
+            <span>Back to Products</span>
+          </button>
+          <div className="text-xs font-bold text-white flex items-center gap-1.5">
+            <Icon name="cart" className="w-3.5 h-3.5 text-amber-400" />
+            <span>Bill ({totalItemsCount} items)</span>
+          </div>
+        </div>
+      )}
+
       {/* Customer Header Bar (Matching Mockup) */}
       <div className="p-2.5 sm:p-3 bg-[#0F172A] border-b border-slate-800/80 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
